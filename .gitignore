@@ -3,3 +3,7 @@ build
 tags
 .editorconfig
 .DS_Store
+Dockerfile
+build_image.sh
+install_ubuntu_diff.txt
+start_docker.sh

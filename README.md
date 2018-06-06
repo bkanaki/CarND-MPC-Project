@@ -3,6 +3,36 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+## Reflection
+### Model
+A simple Kinematic model is used, with the model equations as:
+
+```
+x[t+1] = x[t] + v[t] * cos(psi[t]) * dt
+y[t+1] = y[t] + v[t] * sin(psi[t]) * dt
+psi[t+1] = psi[t] - v[t] / Lf * delta[t] * dt
+v[t+1] = v[t] + a[t] * dt
+cte[t+1] = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt
+epsi[t+1] = psi[t] - psides[t] + v[t] * delta[t] / Lf * dt
+```
+
+where `x, y` deonte the car position, `psi` is the heading direction, `v` is the velocity, `cte` is the cross track error and `epsi` is the orientation error.
+
+This model neglects any complex interactions between tires and the road. Moreover, the constant, `Lf` is the distance between the car of mass and the front wheels. The goal is to get outputs, `a` the acceleration and `delta` the steering angle. 
+
+The solution should minimize the objective function defined [here](https://github.com/bkanaki/CarND-MPC-Project/blob/d6a5f4fa64f5309952a6c5b39c2c880769a9a37f/src/MPC.cpp#L41).
+
+### Timestep and Elapsed Duration.
+The timestep (N) is chosen such that the updates are real-time and there is no lag. A high value of N would assume that it would have to solve for a larger dimensional vector which would slow down the calculations, whereas, very low value of N would lead to jerky motion. Here, N is chosen as 8. The other parameter, Elapsed duration between timesteps (dt) is chosen to be 0.1 second by following the MPC Project Q&A.
+
+### Polynomial Fitting
+The waypoints provided by the simulator are transformed to the car coordinate system. Then a 3rd-degree polynomial is fitted to the these waypoints. The polynomial coefficients obtained are used to calculate the `cte` and `epsi` later on. They are used by the solver as well to create a reference trajectory.
+
+### Latency
+As mentioned in the class notes: "In a real car, an actuation command won't execute instantly - there will be a delay as the command propagates through the system. A realistic delay might be on the order of 100 milliseconds."
+
+Following [this](https://discussions.udacity.com/t/how-to-incorporate-latency-into-the-model/257391/4) thread, I calculated the states by assuming 100 ms latency and updating them using the same model as described above before passing it to the solver.
+
 ## Dependencies
 
 * cmake >= 3.5
